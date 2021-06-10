@@ -2,7 +2,8 @@ import requests
 import bs4
 import pandas as pd
 from datetime import datetime
-
+import numpy as np
+import xlrd
 
 def req_wallet(wallet):
 
@@ -51,10 +52,10 @@ def req_wallet(wallet):
     values.append([now_time])
     line = dict(zip(keys, values))
     print(line)
-
-    # df = pd.DataFrame(data=line)
     #
-    # df.to_excel("Wallets.xlsx")
+    # # df = pd.DataFrame(data=line)
+    # #
+    # # df.to_excel("Wallets.xlsx")
 
 
 
@@ -62,5 +63,16 @@ def req_wallet(wallet):
 
 if __name__ == '__main__':
 
-    req_wallet("33HfYW4A1LP6wWj7DFyD9X1D2K2iWQuBKJ")
+    wallet_list= []
+    df = pd.read_excel(r"C:\Users\GZL_010\Desktop\wallets.xlsx")
+    for col in df.columns:
+        wallet_list.append(col)
+        for val in df[col]:
+            wallet_list.append(val)
 
+    for wallet in wallet_list:
+        try:
+            req_wallet(wallet)
+        except Exception as Error:
+            print(f"Error happened on {wallet}")
+            print(str(Error))
