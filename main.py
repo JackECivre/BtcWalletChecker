@@ -2,6 +2,7 @@ import requests
 import bs4
 import pandas as pd
 from datetime import datetime
+import time
 import numpy as np
 import xlrd
 
@@ -29,50 +30,61 @@ def req_wallet(wallet):
         span = i.find("span")
         usd_string.append(span.string)
 
-    usd_print = usd_string[0].split()
-    usd_values = [s for s in usd_print if any(xs in s for xs in "$")]
+    try:
+        usd_print = usd_string[0].split()
+        usd_values = [s for s in usd_print if any(xs in s for xs in "$")]
+    except Exception as error_usd_string:
+        print("Error happened during USD information collection - " + str(error_usd_string))
 
-    keys.append(data[0])
-    keys.append(data[4])
-    keys.append(data[6])
-    keys.append(data[8])
-    keys.append(data[10])
-    keys.append(data[6]+" USD")
-    keys.append(data[8]+" USD")
-    keys.append(data[10]+" USD")
-    keys.append("Check Date")
-    values.append([data[1]])
-    values.append([data[5]])
-    values.append([data[7]])
-    values.append([data[9]])
-    values.append([data[11]])
-    values.append([usd_values[0].split("(")[1].split(")")[0]])
-    values.append([usd_values[1].split("(")[1].split(")")[0]])
-    values.append([usd_values[2].split("(")[1].split(")")[0]])
-    values.append([now_time])
-    line = dict(zip(keys, values))
-    print(line)
+    try:
+        keys.append(data[0])
+        keys.append(data[4])
+        keys.append(data[6])
+        keys.append(data[8])
+        keys.append(data[10])
+        keys.append(data[6]+" USD")
+        keys.append(data[8]+" USD")
+        keys.append(data[10]+" USD")
+        keys.append("Check Date")
+        values.append([data[1]])
+        values.append([data[5]])
+        values.append([data[7]])
+        values.append([data[9]])
+        values.append([data[11]])
+        values.append([usd_values[0].split("(")[1].split(")")[0]])
+        values.append([usd_values[1].split("(")[1].split(")")[0]])
+        values.append([usd_values[2].split("(")[1].split(")")[0]])
+        values.append([now_time])
+        line = dict(zip(keys, values))
+        print(line)
+    except Exception as error_line:
+        print("Error occured while creating line - " + str(error_line))
     #
     # # df = pd.DataFrame(data=line)
     # #
     # # df.to_excel("Wallets.xlsx")
 
 
-
-
-
 if __name__ == '__main__':
-
-    wallet_list= []
+    wallet_list = []
     df = pd.read_excel(r"C:\Users\GZL_010\Desktop\wallets.xlsx")
+
     for col in df.columns:
         wallet_list.append(col)
         for val in df[col]:
             wallet_list.append(val)
+    print(wallet_list)
 
     for wallet in wallet_list:
         try:
             req_wallet(wallet)
         except Exception as Error:
             print(f"Error happened on {wallet}")
-            print(str(Error))
+            try:
+                print("Retrying - in 5 seconds")
+                time.sleep(5)
+                req_wallet(wallet)
+            except Exception as Error:
+                print("Retry Failed " + str(Error))
+
+            print("Couldn't complete due to " + str(Error))
