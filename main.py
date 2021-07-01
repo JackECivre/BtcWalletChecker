@@ -4,7 +4,7 @@ import pandas as pd
 from datetime import datetime
 import time
 import numpy as np
-import xlrd
+from openpyxl import load_workbook
 
 def req_wallet(wallet):
 
@@ -65,8 +65,18 @@ def req_wallet(wallet):
     data = data_gathering(result)
 
     def write_to_excel(line):
+
+        # new dataframe with same columns
         df = pd.DataFrame(data=line)
-        df.ExcelWriter("Wallets.xlsx", engine="openpyxl")
+        writer = pd.ExcelWriter(r"Wallets.xlsx", engine='openpyxl')
+        # write out the new sheet
+        df.to_excel(writer, index=False, header=False)
+        writer.save()
+        writer.close()
+
+        print(line)
+
+
 
     if result.status_code == 200:
         try:
