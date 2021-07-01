@@ -10,12 +10,12 @@ def req_wallet(wallet):
 
     now_time = datetime.now().strftime("%d-%m-%Y_%H:%M")
     url = f"https://www.blockchain.com/btc/address/{wallet}"
-    print(url)
+    # print(url)
     result = requests.get(url)
-    print(result)
+    # print(result)
 
-    def data_gathering(result):
-        soup = bs4.BeautifulSoup(result.text, "lxml")
+    def data_gathering(link):
+        soup = bs4.BeautifulSoup(link.text, "lxml")
         btc = soup.find_all("div", class_="sc-8sty72-0 bFeqhe")
         usd = soup.find_all("div", class_="sc-10m3woc-0 sc-19bnflk-0 GYUxR izJzLI")
 
@@ -76,8 +76,6 @@ def req_wallet(wallet):
 
         print(line)
 
-
-
     if result.status_code == 200:
         try:
             time.sleep(1)
@@ -100,9 +98,6 @@ def req_wallet(wallet):
             write_to_excel(data)
         except Exception as Error:
             print("Writing to Excel Failed " + str(Error))
-
-
-
 
 
 if __name__ == '__main__':
