@@ -13,56 +13,86 @@ def req_wallet(wallet):
     print(url)
     result = requests.get(url)
     print(result)
-    soup = bs4.BeautifulSoup(result.text, "lxml")
-    btc = soup.find_all("div", class_="sc-8sty72-0 bFeqhe")
-    usd = soup.find_all("div", class_="sc-10m3woc-0 sc-19bnflk-0 GYUxR izJzLI")
 
-    data = []
-    keys = []
-    values = []
-    usd_string = []
+    def data_gathering(result):
+        soup = bs4.BeautifulSoup(result.text, "lxml")
+        btc = soup.find_all("div", class_="sc-8sty72-0 bFeqhe")
+        usd = soup.find_all("div", class_="sc-10m3woc-0 sc-19bnflk-0 GYUxR izJzLI")
 
-    for i in btc:
-        span = i.find("span")
-        data.append(span.string)
+        data = []
+        keys = []
+        values = []
+        usd_string = []
 
-    for i in usd:
-        span = i.find("span")
-        usd_string.append(span.string)
+        for i in btc:
+            span = i.find("span")
+            data.append(span.string)
 
-    try:
-        usd_print = usd_string[0].split()
-        usd_values = [s for s in usd_print if any(xs in s for xs in "$")]
-    except Exception as error_usd_string:
-        print("Error happened during USD information collection - " + str(error_usd_string))
+        for i in usd:
+            span = i.find("span")
+            usd_string.append(span.string)
 
-    try:
-        keys.append(data[0])
-        keys.append(data[4])
-        keys.append(data[6])
-        keys.append(data[8])
-        keys.append(data[10])
-        keys.append(data[6]+" USD")
-        keys.append(data[8]+" USD")
-        keys.append(data[10]+" USD")
-        keys.append("Check Date")
-        values.append([data[1]])
-        values.append([data[5]])
-        values.append([data[7]])
-        values.append([data[9]])
-        values.append([data[11]])
-        values.append([usd_values[0].split("(")[1].split(")")[0]])
-        values.append([usd_values[1].split("(")[1].split(")")[0]])
-        values.append([usd_values[2].split("(")[1].split(")")[0]])
-        values.append([now_time])
-        line = dict(zip(keys, values))
-        print(line)
-    except Exception as error_line:
-        print("Error occured while creating line - " + str(error_line))
-    #
-    # # df = pd.DataFrame(data=line)
-    # #
-    # # df.to_excel("Wallets.xlsx")
+        try:
+            usd_print = usd_string[0].split()
+            usd_values = [s for s in usd_print if any(xs in s for xs in "$")]
+        except Exception as error_usd_string:
+            print("Error happened during USD information collection - " + str(error_usd_string))
+
+        try:
+            keys.append(data[0])
+            keys.append(data[4])
+            keys.append(data[6])
+            keys.append(data[8])
+            keys.append(data[10])
+            keys.append(data[6] + " USD")
+            keys.append(data[8] + " USD")
+            keys.append(data[10] + " USD")
+            keys.append("Check Date")
+            values.append([data[1]])
+            values.append([data[5]])
+            values.append([data[7]])
+            values.append([data[9]])
+            values.append([data[11]])
+            values.append([usd_values[0].split("(")[1].split(")")[0]])
+            values.append([usd_values[1].split("(")[1].split(")")[0]])
+            values.append([usd_values[2].split("(")[1].split(")")[0]])
+            values.append([now_time])
+            line = dict(zip(keys, values))
+            return line
+        except Exception as error_line:
+            print("Error occured while creating line - " + str(error_line))
+
+    data = data_gathering(result)
+
+    def write_to_excel(line):
+        df = pd.DataFrame(data=line)
+        df.ExcelWriter("Wallets.xlsx", engine="openpyxl")
+
+    if result.status_code == 200:
+        try:
+            time.sleep(1)
+            data_gathering(result)
+        except Exception as Error:
+            print("Response is not right -Trying again in 5 seconds " + str(Error))
+
+        try:
+            write_to_excel(data)
+        except Exception as Error:
+            print("Writing to Excel Failed " + str(Error))
+    else:
+        try:
+            time.sleep(5)
+            data_gathering(result)
+        except Exception as Error:
+            print("Error with data gathering " + str(Error))
+
+        try:
+            write_to_excel(data)
+        except Exception as Error:
+            print("Writing to Excel Failed " + str(Error))
+
+
+
 
 
 if __name__ == '__main__':
