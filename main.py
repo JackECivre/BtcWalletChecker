@@ -6,6 +6,7 @@ import time
 import numpy as np
 from openpyxl import load_workbook
 
+
 def req_wallet(wallet):
 
     now_time = datetime.now().strftime("%d-%m-%Y_%H:%M")
@@ -14,20 +15,17 @@ def req_wallet(wallet):
     result = requests.get(url)
     # print(result)
 
-
     def data_gathering(link):
         soup = bs4.BeautifulSoup(link.text, "lxml")
         btc = soup.find_all("div", class_="sc-8sty72-0 bFeqhe")
         usd = soup.find_all("div", class_="sc-10m3woc-0 sc-19bnflk-0 GYUxR izJzLI")
         last_transaction = soup.find_all("div", class_="kad8ah-0 fjudWa")
 
-
         data = []
         keys = []
         values = []
         usd_string = []
         last_transaction_string = []
-
 
         for i in btc:
             span = i.find("span")
@@ -79,7 +77,8 @@ def req_wallet(wallet):
     def write_to_excel(line):
 
         # new dataframe with same columns
-        df = pd.DataFrame(data=line)
+        df = pd.DataFrame(line)
+        # reader = pd.read_excel(r"Wallets.xlsx")
         writer = pd.ExcelWriter(r"Wallets.xlsx", engine='openpyxl')
         # write out the new sheet
         df.to_excel(writer, index=False, header=False)
@@ -100,10 +99,6 @@ def req_wallet(wallet):
 
         except Exception as Error:
             print("Writing to Excel Failed " + str(Error))
-
-
-
-
     else:
         try:
             time.sleep(5)
