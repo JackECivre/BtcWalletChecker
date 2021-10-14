@@ -112,7 +112,6 @@ def req_wallet(wallet):
             print("Writing to Excel Failed " + str(Error))
 
 
-
 if __name__ == '__main__':
     wallet_list = []
     df = pd.read_excel(r"C:\Users\GZL_010\Desktop\wallets.xlsx")
