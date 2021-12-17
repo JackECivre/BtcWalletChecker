@@ -3,8 +3,8 @@ import bs4
 import pandas as pd
 from datetime import datetime
 import time
-import numpy as np
-from openpyxl import load_workbook
+# import numpy as np
+# from openpyxl import load_workbook
 
 
 def req_wallet(wallet):
@@ -39,7 +39,6 @@ def req_wallet(wallet):
             span = i.find("span")
             last_transaction_string.append(span.string)
 
-
         try:
             usd_print = usd_string[0].split()
             usd_values = [s for s in usd_print if any(xs in s for xs in "$")]
@@ -70,9 +69,9 @@ def req_wallet(wallet):
             line = dict(zip(keys, values))
             return line
         except Exception as error_line:
-            print("Error occured while creating line - " + str(error_line))
+            print("Error occurred while creating line - " + str(error_line))
 
-    data = data_gathering(result)
+    fetched_data = data_gathering(result)
 
     def write_to_excel(line):
 
@@ -91,25 +90,25 @@ def req_wallet(wallet):
         try:
             time.sleep(1)
             data_gathering(result)
-        except Exception as Error:
-            print("Response is not right -Trying again in 5 seconds " + str(Error))
+        except Exception as error:
+            print("Response is not right -Trying again in 5 seconds " + str(error))
 
         try:
-            write_to_excel(data)
+            write_to_excel(fetched_data)
 
-        except Exception as Error:
-            print("Writing to Excel Failed " + str(Error))
+        except Exception as error:
+            print("Writing to Excel Failed " + str(error))
     else:
         try:
             time.sleep(5)
             data_gathering(result)
-        except Exception as Error:
-            print("Error with data gathering " + str(Error))
+        except Exception as error:
+            print("Error with data gathering " + str(error))
 
         try:
-            write_to_excel(data)
-        except Exception as Error:
-            print("Writing to Excel Failed " + str(Error))
+            write_to_excel(fetched_data)
+        except Exception as error:
+            print("Writing to Excel Failed " + str(error))
 
 
 if __name__ == '__main__':
@@ -122,15 +121,15 @@ if __name__ == '__main__':
             wallet_list.append(val)
     print(wallet_list)
 
-    for wallet in wallet_list:
+    for one_wallet in wallet_list:
         try:
-            req_wallet(wallet)
+            req_wallet(one_wallet)
         except Exception as Error:
-            print(f"Error happened on {wallet}")
+            print(f"Error happened on {one_wallet}")
             try:
                 print("Retrying - in 5 seconds")
                 time.sleep(5)
-                req_wallet(wallet)
+                req_wallet(one_wallet)
             except Exception as Error:
                 print("Retry Failed " + str(Error))
 
