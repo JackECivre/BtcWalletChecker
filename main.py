@@ -113,7 +113,7 @@ def req_wallet(wallet):
 
 if __name__ == '__main__':
     wallet_list = []
-    df = pd.read_excel(r"C:\Users\GZL_010\Desktop\wallets.xlsx")
+    df = pd.read_excel(r"D:\Gissel\dev\aaa.xlsx")
 
     for col in df.columns:
         wallet_list.append(col)
@@ -124,13 +124,13 @@ if __name__ == '__main__':
     for one_wallet in wallet_list:
         try:
             req_wallet(one_wallet)
-        except Exception as Error:
+        except Exception as error:
             print(f"Error happened on {one_wallet}")
+            print("Couldn't complete due to " + str(error))
             try:
                 print("Retrying - in 5 seconds")
                 time.sleep(5)
                 req_wallet(one_wallet)
-            except Exception as Error:
-                print("Retry Failed " + str(Error))
+            except Exception as error:
+                print("Retry Failed " + str(error))
 
-            print("Couldn't complete due to " + str(Error))
