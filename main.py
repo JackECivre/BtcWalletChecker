@@ -90,25 +90,25 @@ def req_wallet(wallet):
         try:
             time.sleep(1)
             data_gathering(result)
-        except Exception as error:
-            print("Response is not right -Trying again in 5 seconds " + str(error))
+        except Exception as responseError:
+            print("Response is not right -Trying again in 5 seconds " + str(responseError))
 
         try:
             write_to_excel(fetched_data)
 
-        except Exception as error:
-            print("Writing to Excel Failed " + str(error))
+        except Exception as excelError:
+            print("Writing to Excel Failed " + str(excelError))
     else:
         try:
             time.sleep(5)
             data_gathering(result)
-        except Exception as error:
-            print("Error with data gathering " + str(error))
+        except Exception as appError:
+            print("Error with data gathering " + str(appError))
 
         try:
             write_to_excel(fetched_data)
-        except Exception as error:
-            print("Writing to Excel Failed " + str(error))
+        except Exception as excelRetryError:
+            print("Writing to Excel Failed " + str(excelRetryError))
 
 
 if __name__ == '__main__':
@@ -133,4 +133,3 @@ if __name__ == '__main__':
                 req_wallet(one_wallet)
             except Exception as error:
                 print("Retry Failed " + str(error))
-
